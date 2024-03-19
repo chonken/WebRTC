@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<link rel="stylesheet" href="./style.css" />
+		<title>WebRTC 聊天室</title>
+	</head>
+	<body>
+		<h1>WebRTC 聊天室</h1>
+		<div class="connect">
+			<div>
+				<div>
+					<h2>本地 SDP</h2>
+					<textarea
+						id="localSdp"
+						rows="10"
+						cols="50"
+						disabled
+					></textarea>
+				</div>
+				<div>
+					<h2>本地 ICE</h2>
+					<textarea
+						id="localIce"
+						rows="10"
+						cols="50"
+						disabled
+					></textarea>
+				</div>
+				<button id="offer">發起連線</button>
+			</div>
+			<hr />
+			<div>
+				<div>
+					<h2>對方 SDP</h2>
+					<textarea id="remoteSdp" rows="10" cols="50"></textarea>
+				</div>
+				<div>
+					<h2>對方 ICE</h2>
+					<textarea id="remoteIce" rows="10" cols="50"></textarea>
+				</div>
+				<button id="answer">回應連線</button>
+			</div>
+		</div>
+		<div class="chatroom" style="display: none">
+			<div class="chatbox"></div>
+			<div class="typebox">
+				<input type="text"></input>
+				<button>傳送</button>
+			</div>
+		</div>
+
+		<script src="./char.js"></script>
+	</body>
+</html>
