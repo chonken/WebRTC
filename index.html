@@ -1,64 +1,64 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-	<head>
-		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<link rel="stylesheet" href="./style.css" />
-		<title>WebRTC 聊天室</title>
-	</head>
-	<body>
-		<h1>WebRTC 聊天室</h1>
-		<div class="connect">
-			<div class="media-options">
-				<span>通話設定：</span>
-				<label><input type="checkbox" id="useAudio" checked /> 音訊</label>
-				<label><input type="checkbox" id="useVideo" checked /> 視訊</label>
-			</div>
-			<div class="connect-panels">
-				<div>
-					<div>
-						<h2>本地 SDP</h2>
-						<textarea id="localSdp" rows="10" cols="50" disabled></textarea>
-					</div>
-					<div>
-						<h2>本地 ICE</h2>
-						<textarea id="localIce" rows="10" cols="50" disabled></textarea>
-					</div>
-					<button id="offer">發起連線</button>
-				</div>
-				<hr />
-				<div>
-					<div>
-						<h2>對方 SDP</h2>
-						<textarea id="remoteSdp" rows="10" cols="50"></textarea>
-					</div>
-					<div>
-						<h2>對方 ICE</h2>
-						<textarea id="remoteIce" rows="10" cols="50"></textarea>
-					</div>
-					<button id="answer">回應連線</button>
-				</div>
-			</div>
-		</div>
-		<div class="chatroom" style="display: none">
-			<div class="video-section" style="display: none">
-				<video class="remote-video" autoplay playsinline style="display: none"></video>
-				<div class="remote-clown clown-placeholder" style="display: flex">🤡</div>
-				<video class="local-video" autoplay playsinline muted style="display: none"></video>
-				<div class="local-clown clown-placeholder" style="display: none">🤡</div>
-			</div>
-			<div class="call-controls" style="display: none">
-				<button class="btn-mute">靜音</button>
-				<button class="btn-camera">關閉鏡頭</button>
-				<button class="btn-hangup">掛斷</button>
-			</div>
-			<div class="chatbox"></div>
-			<div class="typebox">
-				<input type="text" />
-				<button>傳送</button>
-			</div>
-		</div>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="./style.css" />
+    <title>WebRTC 聊天室</title>
+  </head>
+  <body>
+    <h1>WebRTC 聊天室</h1>
+    <div class="connect">
+      <div class="media-options">
+        <span>通話設定：</span>
+        <label><input type="checkbox" id="useAudio" checked /> 音訊</label>
+        <label><input type="checkbox" id="useVideo" checked /> 視訊</label>
+      </div>
+      <div class="connect-panels">
+        <div>
+          <div>
+            <h2>本地 SDP</h2>
+            <textarea id="localSdp" rows="10" cols="50" disabled></textarea>
+          </div>
+          <div>
+            <h2>本地 ICE</h2>
+            <textarea id="localIce" rows="10" cols="50" disabled></textarea>
+          </div>
+          <button id="offer">發起連線</button>
+        </div>
+        <hr />
+        <div>
+          <div>
+            <h2>對方 SDP</h2>
+            <textarea id="remoteSdp" rows="10" cols="50"></textarea>
+          </div>
+          <div>
+            <h2>對方 ICE</h2>
+            <textarea id="remoteIce" rows="10" cols="50"></textarea>
+          </div>
+          <button id="answer">回應連線</button>
+        </div>
+      </div>
+    </div>
+    <div class="chatroom" style="display: none">
+      <div class="video-section">
+        <video class="remote-video" autoplay playsinline style="display: none"></video>
+        <div class="remote-clown clown-placeholder" style="display: flex">🤡</div>
+        <video class="local-video" autoplay playsinline muted style="display: none"></video>
+        <div class="local-clown clown-placeholder" style="display: none">🤡</div>
+      </div>
+      <div class="call-controls">
+        <button class="btn-mute">靜音</button>
+        <button class="btn-camera">關閉鏡頭</button>
+        <button class="btn-hangup">掛斷</button>
+      </div>
+      <div class="chatbox"></div>
+      <div class="typebox">
+        <input type="text" />
+        <button>傳送</button>
+      </div>
+    </div>
 
-		<script type="module" src="./ui.js"></script>
-	</body>
+    <script type="module" src="./ui.js"></script>
+  </body>
 </html>
