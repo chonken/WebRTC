@@ -134,10 +134,19 @@ btnCamera.onclick = () => {
   if (isEnabled !== null) {
     btnCamera.textContent = isEnabled ? "關閉鏡頭" : "開啟鏡頭";
     btnCamera.classList.toggle("active", !isEnabled);
+    if (isEnabled) {
+      localVideo.style.display = "block";
+      localClown.style.display = "none";
+    } else {
+      localVideo.style.display = "none";
+      localClown.style.display = "flex";
+    }
+    sendOnChannel(isEnabled ? "__video:on__" : "__video:off__");
   }
 };
 
 btnHangup.onclick = () => {
+  sendOnChannel("__hangup__");
   closeConnection();
   location.reload();
 };
@@ -148,7 +157,14 @@ async function connectInit(sdp = undefined) {
       connect.remove();
       chatroom.style.display = "flex";
     },
-    (event) => displayMessage(event.data, false),
+    (event) => {
+      const msg = event.data;
+      if (msg === "__hangup__") { location.reload(); return; }
+      if (msg === "__video:off__") { remoteVideo.style.display = "none"; remoteClown.style.display = "flex"; return; }
+      if (msg === "__video:on__") { remoteVideo.style.display = "block"; remoteClown.style.display = "none"; return; }
+      displayMessage(msg, false);
+    },
+    () => location.reload(),
   );
   initICE((candidates) => {
     localIceEl.value = candidates;

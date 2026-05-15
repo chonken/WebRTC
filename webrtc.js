@@ -58,21 +58,22 @@ export async function setAnswer(answerJson) {
   await rtcPeerConnection.setRemoteDescription(answer);
 }
 
-export function initDataChannel(onOpen, onMessage) {
+export function initDataChannel(onOpen, onMessage, onClose) {
   if (isOffer) {
     dataChannel = rtcPeerConnection.createDataChannel("chat");
-    _setupChannel(dataChannel, onOpen, onMessage);
+    _setupChannel(dataChannel, onOpen, onMessage, onClose);
   } else {
     rtcPeerConnection.ondatachannel = (event) => {
       dataChannel = event.channel;
-      _setupChannel(dataChannel, onOpen, onMessage);
+      _setupChannel(dataChannel, onOpen, onMessage, onClose);
     };
   }
 }
 
-function _setupChannel(channel, onOpen, onMessage) {
+function _setupChannel(channel, onOpen, onMessage, onClose) {
   channel.onopen = onOpen;
   channel.onmessage = onMessage;
+  channel.onclose = onClose;
 }
 
 export function sendOnChannel(message) {
