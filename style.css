@@ -37,7 +37,8 @@
     display: block;
     background: #000;
 }
-.local-video {
+.local-video,
+.local-clown {
     position: absolute;
     bottom: 10px;
     right: 10px;
@@ -45,6 +46,22 @@
     border: 2px solid white;
     border-radius: 6px;
     background: #333;
+}
+.clown-placeholder {
+    align-items: center;
+    justify-content: center;
+    background: #222;
+    color: white;
+    font-size: 80px;
+    user-select: none;
+}
+.remote-clown {
+    width: 100%;
+    min-height: 240px;
+}
+.local-clown {
+    height: 120px;
+    font-size: 40px;
 }
 .call-controls {
     display: flex;

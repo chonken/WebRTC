@@ -30,7 +30,9 @@ const remoteIceEl = document.getElementById('remoteIce')
 const audioCheckbox = document.getElementById('useAudio')
 const videoCheckbox = document.getElementById('useVideo')
 const localVideo = document.querySelector('.local-video')
+const localClown = document.querySelector('.local-clown')
 const remoteVideo = document.querySelector('.remote-video')
+const remoteClown = document.querySelector('.remote-clown')
 const videoSection = document.querySelector('.video-section')
 const btnMute = document.querySelector('.btn-mute')
 const btnCamera = document.querySelector('.btn-camera')
@@ -41,13 +43,8 @@ offerBtn.onclick = async () => {
 	setIsOffer(true)
 	answerBtn.innerText = '收到回應'
 	offerBtn.disabled = true
-	try {
-		await startMedia()
-		connectInit()
-	} catch (err) {
-		alert('無法取得媒體裝置：' + err.message)
-		offerBtn.disabled = false
-	}
+	await startMedia()
+	connectInit()
 }
 
 answerBtn.onclick = async () => {
@@ -76,15 +73,39 @@ async function startMedia() {
 	if (!useAudio && !useVideo) return
 
 	setOnRemoteStream((stream) => {
+		// always set srcObject so audio plays even without video
 		remoteVideo.srcObject = stream
+		const hasVideo = stream.getVideoTracks().length > 0
+		remoteVideo.style.display = hasVideo ? 'block' : 'none'
+		remoteClown.style.display = hasVideo ? 'none' : 'flex'
+		videoSection.style.display = 'block'
 	})
 
-	const stream = await initMedia({ audio: useAudio, video: useVideo })
-	localVideo.srcObject = stream
+	let stream = null
+	let hasLocalVideo = false
+
+	try {
+		stream = await initMedia({ audio: useAudio, video: useVideo })
+		hasLocalVideo = stream.getVideoTracks().length > 0
+	} catch {
+		// video unavailable — retry with audio only
+		if (useVideo && useAudio) {
+			try {
+				stream = await initMedia({ audio: true, video: false })
+			} catch {
+				// no media at all, continue text-only
+			}
+		}
+	}
+
+	localVideo.style.display = hasLocalVideo ? 'block' : 'none'
+	localClown.style.display = hasLocalVideo ? 'none' : 'flex'
+	if (hasLocalVideo) localVideo.srcObject = stream
 
 	if (useVideo) videoSection.style.display = 'block'
 	callControls.style.display = 'flex'
-	if (!useVideo) btnCamera.style.display = 'none'
+	btnCamera.disabled = !hasLocalVideo
+	btnMute.disabled = !stream?.getAudioTracks().length
 }
 
 inputBtn.onclick = sendMessage
