@@ -77,13 +77,14 @@ async function startMedia() {
 	const useVideo = videoCheckbox.checked
 	if (!useAudio && !useVideo) return
 
-	setOnRemoteStream((stream) => {
-		// always set srcObject so audio plays even without video
-		remoteVideo.srcObject = stream
-		const hasVideo = stream.getVideoTracks().length > 0
-		remoteVideo.style.display = hasVideo ? 'block' : 'none'
-		remoteClown.style.display = hasVideo ? 'none' : 'flex'
+	setOnRemoteStream((event) => {
+		if (!remoteVideo.srcObject) remoteVideo.srcObject = new MediaStream()
+		remoteVideo.srcObject.addTrack(event.track)
 		videoSection.style.display = 'block'
+		if (event.track.kind === 'video') {
+			remoteVideo.style.display = 'block'
+			remoteClown.style.display = 'none'
+		}
 	})
 
 	let stream = null

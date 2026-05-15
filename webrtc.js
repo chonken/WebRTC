@@ -90,9 +90,7 @@ export async function initMedia(options) {
 }
 
 export function setOnRemoteStream(callback) {
-	rtcPeerConnection.ontrack = (event) => {
-		callback(event.streams[0])
-	}
+	rtcPeerConnection.ontrack = callback
 }
 
 export function toggleAudio() {
