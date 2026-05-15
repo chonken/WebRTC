@@ -30,8 +30,8 @@ python -m http.server
 
 Logic is split into two ES modules. `index.html` loads `ui.js` as `<script type="module">`, which imports `webrtc.js`.
 
-- **`webrtc.js`** — WebRTC protocol layer. No DOM access. Owns `RTCPeerConnection`, data channel, and all SDP/ICE operations.
-- **`ui.js`** — Frontend UI layer. Owns all DOM references, button handlers, and message rendering. Calls into `webrtc.js` via its exported functions.
+- **`webrtc.js`** — WebRTC protocol layer. No DOM access. Owns `RTCPeerConnection`, data channel, media tracks, and all SDP/ICE operations. Exports: signaling functions, `initMedia`, `setOnRemoteStream`, `toggleAudio`, `toggleVideo`, `closeConnection`.
+- **`ui.js`** — Frontend UI layer. Owns all DOM references, button handlers, message rendering, and media controls. Calls into `webrtc.js` via its exported functions.
 - **`style.css`** — Layout only.
 
 For the step-by-step connection flow, see `.claude/memory/project-connection-flow.md`.  

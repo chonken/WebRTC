@@ -80,3 +80,37 @@ export function sendOnChannel(message) {
 	}
 	return false
 }
+
+let localStream = null
+
+export async function initMedia(options) {
+	localStream = await navigator.mediaDevices.getUserMedia(options)
+	localStream.getTracks().forEach((track) => {
+		rtcPeerConnection.addTrack(track, localStream)
+	})
+	return localStream
+}
+
+export function setOnRemoteStream(callback) {
+	rtcPeerConnection.ontrack = (event) => {
+		callback(event.streams[0])
+	}
+}
+
+export function toggleAudio() {
+	const track = localStream?.getAudioTracks()[0]
+	if (track) track.enabled = !track.enabled
+	return track?.enabled ?? null
+}
+
+export function toggleVideo() {
+	const track = localStream?.getVideoTracks()[0]
+	if (track) track.enabled = !track.enabled
+	return track?.enabled ?? null
+}
+
+export function closeConnection() {
+	localStream?.getTracks().forEach((t) => t.stop())
+	localStream = null
+	rtcPeerConnection.close()
+}

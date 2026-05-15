@@ -8,6 +8,11 @@ import {
 	setAnswer,
 	initDataChannel,
 	sendOnChannel,
+	initMedia,
+	setOnRemoteStream,
+	toggleAudio,
+	toggleVideo,
+	closeConnection,
 } from './webrtc.js'
 
 const connect = document.querySelector('.connect')
@@ -22,31 +27,64 @@ const localSdpEl = document.getElementById('localSdp')
 const localIceEl = document.getElementById('localIce')
 const remoteSdpEl = document.getElementById('remoteSdp')
 const remoteIceEl = document.getElementById('remoteIce')
+const audioCheckbox = document.getElementById('useAudio')
+const videoCheckbox = document.getElementById('useVideo')
+const localVideo = document.querySelector('.local-video')
+const remoteVideo = document.querySelector('.remote-video')
+const videoSection = document.querySelector('.video-section')
+const btnMute = document.querySelector('.btn-mute')
+const btnCamera = document.querySelector('.btn-camera')
+const btnHangup = document.querySelector('.btn-hangup')
+const callControls = document.querySelector('.call-controls')
 
-offerBtn.onclick = () => {
+offerBtn.onclick = async () => {
 	setIsOffer(true)
 	answerBtn.innerText = '收到回應'
 	offerBtn.disabled = true
-	connectInit()
+	try {
+		await startMedia()
+		connectInit()
+	} catch (err) {
+		alert('無法取得媒體裝置：' + err.message)
+		offerBtn.disabled = false
+	}
 }
 
-answerBtn.onclick = () => {
+answerBtn.onclick = async () => {
 	const sdp = remoteSdpEl.value
 	const ice = remoteIceEl.value
-	if (sdp !== '' && ice !== '') {
-		try {
-			if (isOffer) {
-				setAnswer(sdp)
-			} else {
-				connectInit(sdp)
-			}
-			setIceCandidates(ice)
-		} catch {
-			alert('不要亂打好嗎')
-		}
-	} else {
+	if (sdp === '' || ice === '') {
 		alert('空的是要怎麼' + answerBtn.innerText)
+		return
 	}
+	try {
+		if (isOffer) {
+			setAnswer(sdp)
+		} else {
+			await startMedia()
+			connectInit(sdp)
+		}
+		setIceCandidates(ice)
+	} catch (err) {
+		alert('發生錯誤：' + (err.message || '請確認輸入內容'))
+	}
+}
+
+async function startMedia() {
+	const useAudio = audioCheckbox.checked
+	const useVideo = videoCheckbox.checked
+	if (!useAudio && !useVideo) return
+
+	setOnRemoteStream((stream) => {
+		remoteVideo.srcObject = stream
+	})
+
+	const stream = await initMedia({ audio: useAudio, video: useVideo })
+	localVideo.srcObject = stream
+
+	if (useVideo) videoSection.style.display = 'block'
+	callControls.style.display = 'flex'
+	if (!useVideo) btnCamera.style.display = 'none'
 }
 
 inputBtn.onclick = sendMessage
@@ -54,6 +92,27 @@ inputBox.onkeydown = (event) => {
 	if (event.key === 'Enter' && !event.shiftKey && inputBox.value.trim() !== '') {
 		sendMessage()
 	}
+}
+
+btnMute.onclick = () => {
+	const isEnabled = toggleAudio()
+	if (isEnabled !== null) {
+		btnMute.textContent = isEnabled ? '靜音' : '取消靜音'
+		btnMute.classList.toggle('active', !isEnabled)
+	}
+}
+
+btnCamera.onclick = () => {
+	const isEnabled = toggleVideo()
+	if (isEnabled !== null) {
+		btnCamera.textContent = isEnabled ? '關閉鏡頭' : '開啟鏡頭'
+		btnCamera.classList.toggle('active', !isEnabled)
+	}
+}
+
+btnHangup.onclick = () => {
+	closeConnection()
+	location.reload()
 }
 
 function connectInit(sdp = undefined) {
@@ -91,4 +150,5 @@ function displayMessage(message, isMe) {
 	msg.textContent = message
 	msg.classList.add(isMe ? 'me' : 'others')
 	chatbox.appendChild(msg)
+	chatbox.scrollTop = chatbox.scrollHeight
 }

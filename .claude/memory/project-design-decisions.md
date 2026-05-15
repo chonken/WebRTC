@@ -33,4 +33,22 @@ The connection object is created at module load time (`new RTCPeerConnection(con
 
 **Why:** Keeps the HTML clean and lets the browser handle module resolution natively.
 
+### Media tracks must be added before SDP creation
+
+`initMedia` calls `addTrack` on the `RTCPeerConnection` before `createOffer`/`createAnswer` is called. This is mandatory — tracks added after SDP negotiation are not included in the offer/answer and will not be transmitted.
+
+**Why:** WebRTC SDP describes the negotiated media capabilities at the moment of offer/answer creation. Adding tracks late produces an SDP without audio/video m-lines.
+
+### `localStream` is module-private in `webrtc.js`
+
+`localStream` (from `getUserMedia`) is stored as a module-level variable, not exported. UI controls (mute/camera toggle, hang up) call the exported `toggleAudio`, `toggleVideo`, `closeConnection` helpers instead of touching the stream directly.
+
+**Why:** Keeps the DOM-free contract of `webrtc.js` — the UI layer never holds a reference to the stream or its tracks.
+
+### `closeConnection` stops tracks before closing peer connection
+
+`closeConnection` calls `track.stop()` on all local tracks before `rtcPeerConnection.close()`. The hang-up button then does `location.reload()` to reset all state.
+
+**Why:** `track.stop()` is the only way to turn off the camera/microphone indicator light in the browser. Closing the peer connection alone does not stop the hardware capture.
+
 See [[project-connection-flow]] for how these decisions affect the signaling steps.
