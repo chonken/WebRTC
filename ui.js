@@ -43,8 +43,13 @@ offerBtn.onclick = async () => {
 	setIsOffer(true)
 	answerBtn.innerText = '收到回應'
 	offerBtn.disabled = true
-	await startMedia()
-	connectInit()
+	try {
+		await startMedia()
+		await connectInit()
+	} catch (err) {
+		alert('連線失敗：' + err.message)
+		offerBtn.disabled = false
+	}
 }
 
 answerBtn.onclick = async () => {
@@ -56,10 +61,10 @@ answerBtn.onclick = async () => {
 	}
 	try {
 		if (isOffer) {
-			setAnswer(sdp)
+			await setAnswer(sdp)
 		} else {
 			await startMedia()
-			connectInit(sdp)
+			await connectInit(sdp)
 		}
 		setIceCandidates(ice)
 	} catch (err) {
@@ -136,7 +141,7 @@ btnHangup.onclick = () => {
 	location.reload()
 }
 
-function connectInit(sdp = undefined) {
+async function connectInit(sdp = undefined) {
 	initDataChannel(
 		() => {
 			connect.remove()
@@ -148,11 +153,11 @@ function connectInit(sdp = undefined) {
 		localIceEl.value = candidates
 	})
 	if (isOffer) {
-		createOffer((sdpJson) => {
+		await createOffer((sdpJson) => {
 			localSdpEl.value = sdpJson
 		})
 	} else {
-		createAnswer(sdp, (sdpJson) => {
+		await createAnswer(sdp, (sdpJson) => {
 			localSdpEl.value = sdpJson
 		})
 	}

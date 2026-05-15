@@ -35,25 +35,23 @@ export function setIceCandidates(candidatesJson) {
 	})
 }
 
-export function createOffer(onReady) {
-	rtcPeerConnection.createOffer().then((offer) => {
-		rtcPeerConnection.setLocalDescription(offer)
-		onReady(JSON.stringify(offer))
-	})
+export async function createOffer(onReady) {
+	const offer = await rtcPeerConnection.createOffer()
+	await rtcPeerConnection.setLocalDescription(offer)
+	onReady(JSON.stringify(offer))
 }
 
-export function createAnswer(offerJson, onReady) {
+export async function createAnswer(offerJson, onReady) {
 	const offer = new RTCSessionDescription(JSON.parse(offerJson))
-	rtcPeerConnection.setRemoteDescription(offer)
-	rtcPeerConnection.createAnswer().then((answer) => {
-		rtcPeerConnection.setLocalDescription(answer)
-		onReady(JSON.stringify(answer))
-	})
+	await rtcPeerConnection.setRemoteDescription(offer)
+	const answer = await rtcPeerConnection.createAnswer()
+	await rtcPeerConnection.setLocalDescription(answer)
+	onReady(JSON.stringify(answer))
 }
 
-export function setAnswer(answerJson) {
+export async function setAnswer(answerJson) {
 	const answer = new RTCSessionDescription(JSON.parse(answerJson))
-	rtcPeerConnection.setRemoteDescription(answer)
+	await rtcPeerConnection.setRemoteDescription(answer)
 }
 
 export function initDataChannel(onOpen, onMessage) {
